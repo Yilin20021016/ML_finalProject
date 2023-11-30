@@ -4,6 +4,9 @@
 from ultralytics import YOLO
 from shutil import copy
 from os import path, mkdir, listdir
+import os
+
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # 尋找最新版本
 def find_FinalVersion(set:str) -> str:
@@ -18,9 +21,10 @@ if __name__ == '__main__':
         version  = find_FinalVersion('train')
 
     except FileNotFoundError: # 訓練第一代
+        print('目前訓練為第1代')
         model = YOLO('./models/yolov8n.pt')
-        results = model.train(data="dataset/data.yaml", epochs=300, batch=3)
-        results = model.val(data="dataset/data.yaml")
+        results = model.train(data="data.yaml", epochs=300, batch=3)
+        results = model.val(data="data.yaml")
 
         if not path.exists(f'./models/G1'):
             mkdir(f'./models/G1')
@@ -40,8 +44,8 @@ if __name__ == '__main__':
         print(f'目前訓練為第{version+1}代')
 
         model = YOLO(f'./models/G{version}/last.pt')
-        results = model.train(data="dataset/data.yaml", epochs=300, batch=3)
-        results = model.val(data="dataset/data.yaml")
+        results = model.train(data="data.yaml", epochs=300, batch=3, device='0')
+        results = model.val(data="data.yaml")
 
         if not path.exists(f'./models/G{version+1}'):
             mkdir(f'./models/G{version+1}')
