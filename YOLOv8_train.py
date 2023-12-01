@@ -1,10 +1,10 @@
 # ~/anaconda3/envs/Torch python3.9.18
 # -*- coding: utf-8 -*-
 
-from ultralytics import YOLO
-from shutil import copy
-from os import path, mkdir, listdir
 import os
+from os import path, mkdir, listdir
+from shutil import copy
+from ultralytics import YOLO
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 

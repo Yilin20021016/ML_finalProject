@@ -1,8 +1,8 @@
 # ~/anaconda3/envs/Torch python3.9.18
 # -*- coding: utf-8 -*-
 
-from ultralytics import YOLO
 import cv2
+from ultralytics import YOLO
 from YOLOv8_train import find_FinalVersion
 
 if __name__ == '__main__':
