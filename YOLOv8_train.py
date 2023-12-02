@@ -23,8 +23,8 @@ if __name__ == '__main__':
     except FileNotFoundError: # 訓練第一代
         print('目前訓練為第1代')
         model = YOLO('./models/yolov8n.pt')
-        results = model.train(data="data.yaml", epochs=300, batch=3)
-        results = model.val(data="data.yaml")
+        results = model.train(data="dataset/data.yaml", epochs=50)
+        results = model.val(data="dataset/data.yaml")
 
         if not path.exists(f'./models/G1'):
             mkdir(f'./models/G1')
