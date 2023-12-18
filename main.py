@@ -41,9 +41,21 @@ def frame_transform(frame, scale, angle):
     img = pygame.transform.rotate(img, angle)
     return img
 
-def surface_refresh():
+def surface_refresh(string, rnd, win, lose, frame):
+    # clean all surface
     surface_hint.fill(WHITE)
     surface_info.fill((25,100,55))
+    # show text
+    draw_text(surface_hint, str(string), 48, WIDTH/2, 170, (0,0,0))
+    draw_text(surface_info, f'round: {rnd}', 36, 120, 60, WHITE)
+    draw_text(surface_info, f'win: {win}', 36, 120, 120, WHITE)
+    draw_text(surface_info, f'lose: {lose}', 36, 120, 180, WHITE)
+    frame = frame_transform(frame, (300, 400), 90)
+    # screen blit
+    screen.blit(surface_hint, (0,0))
+    screen.blit(surface_info, (400, HEIGHT-300))
+    screen.blit(frame, (0,HEIGHT-300))
+    pygame.display.update()
     return
 
 
@@ -56,12 +68,7 @@ if __name__ == '__main__':
     clock.tick(FPS)
     camera = cv2.VideoCapture(0)
 
-    # initialize surface
-    surface_info = pygame.surface.Surface((WIDTH-400, 300))
-    surface_hint = pygame.surface.Surface((WIDTH, HEIGHT-300))
-    surface_refresh()
-
-    # variable
+    # initialize variable
     running = True
     waiting = True
     count = 5
@@ -70,6 +77,10 @@ if __name__ == '__main__':
     lose = 0
     stage = 1
     status = ''
+
+    # create surface
+    surface_info = pygame.surface.Surface((WIDTH-400, 300))
+    surface_hint = pygame.surface.Surface((WIDTH, HEIGHT-300))
 
     # answer
     computer = (randint(0,2), randint(0,3))
@@ -117,17 +128,18 @@ if __name__ == '__main__':
                     print("Can't receive frame (stream end?). Exiting ...")
                     exit()
                 frame, cls = predict(model_part1, frame)
-                screen.blit(frame, (0,HEIGHT-300))
-                pygame.display.update()
+                surface_refresh(count, rnd, win, lose, frame)
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         exit()
 
             # show answer
-            surface_hint.fill(WHITE)
-            draw_text(surface_hint, chart_part1[computer[0]], 48, WIDTH/2, 170, (0,0,0))
-            pygame.display.update()
+            start_time = pygame.time.get_ticks()
+            end_time = pygame.time.get_ticks()
+            while (end_time-start_time)/1000 < 1:
+                end_time=pygame.time.get_ticks()
+                surface_refresh(chart_part1[computer[0]], rnd, win, lose, frame)
 
             # win or lose checking
             if (computer[0] == 0 and cls == 2) or (computer[0] == 1 and cls == 0) or (computer[0] == 2 and cls == 1): # win
@@ -137,12 +149,12 @@ if __name__ == '__main__':
                 stage = 2
                 status = 'lose'
             elif computer[0] == cls: # tie
+                rnd += 1
                 computer = (randint(0,2), randint(0,3))
-
-            pygame.time.wait(500)
 
             count = 5
             pygame.time.set_timer(COUNTDOWN, 1000)
+            continue
 
         # part2
         if count == 0 and stage == 2:
@@ -154,18 +166,18 @@ if __name__ == '__main__':
                     print("Can't receive frame (stream end?). Exiting ...")
                     exit()
                 frame, cls = predict(model_part2, frame)
-                screen.blit(frame, (0,HEIGHT-300))
-                pygame.display.update()
+                surface_refresh(count, rnd, win, lose, frame)
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         exit()
 
             # show answer
-            surface_hint.fill(WHITE)
-            draw_text(surface_hint, chart_part1[computer[1]], 48, WIDTH/2, 170, (0,0,0))
-            pygame.display.update()
-            pygame.time.wait(500)
+            start_time = pygame.time.get_ticks()
+            end_time = pygame.time.get_ticks()
+            while (end_time-start_time)/1000 < 1:
+                end_time=pygame.time.get_ticks()
+                surface_refresh(chart_part1[computer[0]], rnd, win, lose, frame)
 
             # win or lose checking
             if computer[1] == cls:
@@ -173,25 +185,13 @@ if __name__ == '__main__':
                     win += 1
                 elif status == 'lose':
                     lose += 1
-                draw_text(surface_hint, 'You '+status, 48, WIDTH/2, 170, (0,0,0))
+                surface_refresh('You '+status, rnd, win, lose, frame)
             rnd += 1
-            pygame.time.wait(500)
-
+            computer = (randint(0,2), randint(0,3))
+            stage = 1
             count = 5
             pygame.time.set_timer(COUNTDOWN, 1000)
+            continue
 
-        # show text
-        surface_refresh()
-        draw_text(surface_hint, str(count), 48, WIDTH/2, 170, (0,0,0))
-        draw_text(surface_info, f'round: {rnd}', 36, 120, 60, WHITE)
-        draw_text(surface_info, f'win: {win}', 36, 120, 120, WHITE)
-        draw_text(surface_info, f'lose: {lose}', 36, 120, 180, WHITE)
-        frame = frame_transform(frame, (300, 400), 90)
-
-        # screen blit
-        screen.blit(surface_hint, (0,0))
-        screen.blit(surface_info, (400, HEIGHT-300))
-        screen.blit(frame, (0,HEIGHT-300))
-        pygame.display.update()
-
+        surface_refresh(count, rnd, win, lose, frame)
     exit()
