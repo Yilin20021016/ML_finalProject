@@ -9,6 +9,8 @@ if __name__ == '__main__':
     
     try: # 尋找版本
         version  = find_FinalVersion('train')
+        if version == '':
+            version = 1
         print(f'目前使用第{version}代測試')
 
     except FileNotFoundError: # 訓練第一代
@@ -22,8 +24,8 @@ if __name__ == '__main__':
         model = YOLO(f'models/G{version}/best.pt')
         method = input('要以哪種方式測試?\n1.圖片或影片\n2.實時鏡頭\n')
         if method == '1':  # 以圖片或影片測試
-            target = input('請貼上測試檔案的完整路徑(須為jpg、mp4): ')
-            result = model.predict(source=f'{target}', save=True)
+            target = input('請貼上測試檔案的完整路徑(須為jpg、mp4、資料夾): ')
+            result = model.predict(source=f'./dataset/stage2/test/images', save=True)
         elif method == '2':  # 鏡頭實時測試
             camera = cv2.VideoCapture(0)
             if not camera.isOpened():
