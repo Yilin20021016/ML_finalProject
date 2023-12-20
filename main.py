@@ -13,7 +13,7 @@ COUNTDOWN = pygame.USEREVENT + 1
 # variable
 model_part1 = YOLO('models/G1/best.pt')
 model_part2 = YOLO('models/G1/best.pt') # temp
-chart_part1 = {0:'siccor', 1:'paper', 2:'stone'}
+chart_part1 = {0:'scissor', 1:'paper', 2:'stone'}
 chart_part2 = {0:'up', 1:'down', 2:'right', 3:'left'} # temp
 
 # funciton
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     win = 0
     lose = 0
     stage = 1
-    status = ''
+    state = ''
 
     # create surface
     surface_info = pygame.surface.Surface((WIDTH-400, 300))
@@ -144,10 +144,10 @@ if __name__ == '__main__':
             # win or lose checking
             if (computer[0] == 0 and cls == 2) or (computer[0] == 1 and cls == 0) or (computer[0] == 2 and cls == 1): # win
                 stage = 2
-                status = 'win'
+                state = 'win'
             elif (computer[0] == 0 and cls == 1) or (computer[0] == 1 and cls == 2) or (computer[0] == 2 and cls == 0): # lose
                 stage = 2
-                status = 'lose'
+                state = 'lose'
             elif computer[0] == cls: # tie
                 rnd += 1
                 computer = (randint(0,2), randint(0,3))
@@ -181,11 +181,11 @@ if __name__ == '__main__':
 
             # win or lose checking
             if computer[1] == cls:
-                if status == 'win':
+                if state == 'win':
                     win += 1
-                elif status == 'lose':
+                elif state == 'lose':
                     lose += 1
-                surface_refresh('You '+status, rnd, win, lose, frame)
+                surface_refresh('You '+state, rnd, win, lose, frame)
             rnd += 1
             computer = (randint(0,2), randint(0,3))
             stage = 1
