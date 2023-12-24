@@ -11,8 +11,8 @@ WHITE = (255,255,255)
 COUNTDOWN = pygame.USEREVENT + 1
 
 # variable
-model_part1 = YOLO('models/G1/best.pt')
-model_part2 = YOLO('models/G1/best.pt') # temp
+model_part1 = YOLO('models/stage1/G1/best.pt')
+model_part2 = YOLO('models/stage2/G4/best.pt') # temp
 chart_part1 = {0:'scissor', 1:'paper', 2:'stone'}
 chart_part2 = {0:'up', 1:'down', 2:'right', 3:'left'} # temp
 
@@ -177,7 +177,7 @@ if __name__ == '__main__':
             end_time = pygame.time.get_ticks()
             while (end_time-start_time)/1000 < 1:
                 end_time=pygame.time.get_ticks()
-                surface_refresh(chart_part1[computer[0]], rnd, win, lose, frame)
+                surface_refresh(chart_part2[computer[1]], rnd, win, lose, frame)
 
             # win or lose checking
             if computer[1] == cls:
