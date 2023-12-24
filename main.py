@@ -1,5 +1,6 @@
 import cv2
 import pygame
+import random
 from random import randint
 from ultralytics import YOLO
 
@@ -15,6 +16,27 @@ model_part1 = YOLO('models/stage1/G1/best.pt')
 model_part2 = YOLO('models/stage2/G4/best.pt') # temp
 chart_part1 = {0:'scissor', 1:'paper', 2:'stone'}
 chart_part2 = {0:'up', 1:'down', 2:'right', 3:'left'} # temp
+
+# set Meteor class
+class Meteor(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.length = random.randint(5, 20)
+        self.width = random.randint(1, 3)
+        self.color = (255, 255, 255)
+        self.image = pygame.Surface((self.length, self.width))
+        self.image.fill(self.color)
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0, WIDTH)
+        self.rect.y = random.randint(-20, HEIGHT - 20)
+        self.speed = random.randint(5, 15)
+
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.y > HEIGHT:
+            self.rect.y = random.randint(-20, -5)
+            self.rect.x = random.randint(0, WIDTH)
+
 
 # funciton
 def draw_text(surf, text, size , x, y, color):
@@ -58,6 +80,11 @@ def surface_refresh(string, rnd, win, lose, frame):
     pygame.display.update()
     return
 
+# update and draw meteor
+def update_meteor_shower():
+    meteor_sprites.update()
+    meteor_sprites.draw(screen)
+
 
 if __name__ == '__main__':
     # initialize setting
@@ -85,11 +112,37 @@ if __name__ == '__main__':
     # answer
     computer = (randint(0,2), randint(0,3))
 
+    # special effect
+    start_visible = True
+    start_timer = pygame.time.get_ticks()  
+    background_image = pygame.image.load('chrismas.png')
+    meteor_sprites = pygame.sprite.Group()
+
     while running:
         # waiting start
         while waiting:
-            screen.fill((100,100,100))
-            draw_text(screen, 'START', 100, WIDTH/2, HEIGHT/2, WHITE)
+            
+            # plot meteor
+            update_meteor_shower()
+            
+            current_time = pygame.time.get_ticks()
+
+            # START twinkling special effect
+            if  current_time - start_timer > 800:  # interval time(millisecond)
+                start_visible = not start_visible
+                start_timer = current_time
+
+            if start_visible:
+                draw_text(screen, 'START', 100, WIDTH/2, HEIGHT/2, (138,3,47))
+
+            # add meteor effect, for example, Every once in a while, add a new meteor.
+            if random.randint(0, 100) < 2:  # Control the probability of meteor generation
+                meteor = Meteor()
+                meteor_sprites.add(meteor)
+            # update and plot meteor
+            meteor_sprites.update()
+            meteor_sprites.draw(screen)
+
             # event
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -97,7 +150,12 @@ if __name__ == '__main__':
                 elif event.type == pygame.MOUSEBUTTONUP:
                     waiting = False
                     pygame.time.set_timer(COUNTDOWN, 1000)
+
             pygame.display.update()
+            clock.tick(30)
+
+            scaled_background = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
+            screen.blit(scaled_background, (0, 0))
 
         # read camera
         success, frame = camera.read()   
