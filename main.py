@@ -1,7 +1,7 @@
 import cv2
 import pygame
 import random
-from random import randint
+from random import choice
 from ultralytics import YOLO
 
 # const
@@ -15,7 +15,8 @@ COUNTDOWN = pygame.USEREVENT + 1
 model_part1 = YOLO('models/stage1/G1/best.pt')
 model_part2 = YOLO('models/stage2/G4/best.pt') # temp
 chart_part1 = {0:'scissor', 1:'paper', 2:'stone'}
-chart_part2 = {0:'up', 1:'down', 2:'right', 3:'left'} # temp
+chart_part2 = {0:'down', 1:'up', 5:'left', 6:'right'} # temp
+
 
 # set Meteor class
 class Meteor(pygame.sprite.Sprite):
@@ -110,7 +111,7 @@ if __name__ == '__main__':
     surface_hint = pygame.surface.Surface((WIDTH, HEIGHT-300))
 
     # answer
-    computer = (randint(0,2), randint(0,3))
+    computer = (choice(list(chart_part1.keys())), choice(list(chart_part2.keys())))
 
     # special effect
     start_visible = True
@@ -208,7 +209,7 @@ if __name__ == '__main__':
                 state = 'lose'
             elif computer[0] == cls: # tie
                 rnd += 1
-                computer = (randint(0,2), randint(0,3))
+                computer = (choice(list(chart_part1.keys())), choice(list(chart_part2.keys())))
 
             count = 5
             pygame.time.set_timer(COUNTDOWN, 1000)
@@ -238,6 +239,7 @@ if __name__ == '__main__':
                 surface_refresh(chart_part2[computer[1]], rnd, win, lose, frame)
 
             # win or lose checking
+            print(computer[1], cls)
             if computer[1] == cls:
                 if state == 'win':
                     win += 1
@@ -245,7 +247,7 @@ if __name__ == '__main__':
                     lose += 1
                 surface_refresh('You '+state, rnd, win, lose, frame)
             rnd += 1
-            computer = (randint(0,2), randint(0,3))
+            computer = (choice(list(chart_part1.keys())), choice(list(chart_part2.keys())))
             stage = 1
             count = 5
             pygame.time.set_timer(COUNTDOWN, 1000)
