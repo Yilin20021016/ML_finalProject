@@ -12,7 +12,7 @@ WHITE = (255,255,255)
 COUNTDOWN = pygame.USEREVENT + 1
 
 # variable
-model_part1 = YOLO('models/stage1/G1/best.pt')
+model_part1 = YOLO('models/stage1/new/G2/best.pt')
 model_part2 = YOLO('models/stage2/G4/best.pt') # temp
 chart_part1 = {0:'scissor', 1:'paper', 2:'stone'}
 chart_part2 = {0:'down', 1:'up', 5:'left', 6:'right'} # temp
@@ -51,7 +51,7 @@ def draw_text(surf, text, size , x, y, color):
 
 def predict(model,frame):
     cls = None
-    result = model.predict(source=frame, max_det=1)
+    result = model.predict(source=frame, max_det=1, conf=0.6)
     if len(result[0].boxes.cls) != 0:
         cls = int(result[0].boxes.cls.item())
     frame = result[0].plot()[::-1,:,::-1]
